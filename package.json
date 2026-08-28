@@ -4,7 +4,7 @@
   "description": "A portable, verifiable inventory of agent-executable skills. Every entry states how far it has actually been proven.",
   "type": "module",
   "bin": { "skills": "./bin/skills.mjs" },
-  "files": ["bin", "schema", "commands", "*/SKILL.md", "*/eval", "skills.json", "README.md"],
+  "files": ["bin", "schema", "commands", "*/SKILL.md", "*/eval/**", "skills.json", "README.md"],
   "engines": { "node": ">=24" },
   "scripts": {
     "build": "node bin/build.mjs && node bin/render.mjs",

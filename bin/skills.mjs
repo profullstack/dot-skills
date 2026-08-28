@@ -5,11 +5,11 @@
 // which is the right model for a single skill and the wrong one for a
 // collection: the SKILL.md files here sit one level deeper than any engine
 // scans. This installs each skill individually instead.
-import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, cpSync, statSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, cpSync, statSync, mkdtempSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { homedir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const MARKER = '.installed-by-skills';
@@ -20,7 +20,7 @@ const engines = () => ({
   kimi: join(process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code'), 'skills'),
 });
 
-const list = () => readdirSync(ROOT, { withFileTypes: true })
+const list = (root = ROOT) => readdirSync(root, { withFileTypes: true })
   .filter((d) => d.isDirectory() && !d.name.startsWith('.') && !RESERVED.includes(d.name))
   .map((d) => d.name).sort();
 
@@ -29,7 +29,7 @@ const index = () => existsSync(join(ROOT, 'skills.json'))
 
 const run = (script) => execFileSync(process.execPath, [join(ROOT, 'bin', script)], { stdio: 'inherit' });
 const die = (msg) => { console.error(`skills: ${msg}`); process.exit(1); };
-const has = (n) => existsSync(join(ROOT, n, 'SKILL.md'));
+const has = (n, root = ROOT) => existsSync(join(root, n, 'SKILL.md'));
 
 const MARK = {
   notarised: '◆', 'self-verified': '●', 'field-observed': '◐', asserted: '○',
@@ -135,42 +135,86 @@ function cmdRm(name, argv) {
 
 /* ---------------------------------------------------------- distribute --- */
 
+const REMOTE = /^(https?:\/\/|file:\/\/|ssh:\/\/|git@|github:|git\+)/;
+
+/**
+ * Where the skills to install are coming from. A remote source is cloned to a
+ * temp dir and inspected: a SKILL.md at its root is one skill (the shape
+ * `moshcode skill install` assumes), while subdirectories holding SKILL.md are
+ * a collection. Supporting both is the whole point - a collection cloned as if
+ * it were one skill installs nothing discoverable.
+ */
+function resolveSource(argv) {
+  const remote = argv._.find((a) => REMOTE.test(a));
+  if (!remote) return { root: ROOT, names: argv._.length ? argv._ : list(), commands: join(ROOT, 'commands') };
+
+  const url = remote.startsWith('github:') ? `https://github.com/${remote.slice(7)}.git` : remote;
+  const tmp = mkdtempSync(join(tmpdir(), 'skills-'));
+  try {
+    execFileSync('git', ['clone', '--depth', '1', '--quiet', url, tmp], { stdio: ['ignore', 'ignore', 'pipe'] });
+  } catch (err) {
+    rmSync(tmp, { recursive: true, force: true });
+    die(`could not clone ${url}\n${String(err.stderr || err.message).trim()}`);
+  }
+
+  // Single skill: SKILL.md at the root, named after the repository.
+  if (existsSync(join(tmp, 'SKILL.md'))) {
+    const name = (remote.replace(/\.git$/, '').split(/[/:]/).pop() || 'skill').toLowerCase().replace(/[^a-z0-9._-]/g, '-');
+    const holder = mkdtempSync(join(tmpdir(), 'skills-one-'));
+    cpSync(tmp, join(holder, name), { recursive: true });
+    rmSync(tmp, { recursive: true, force: true });
+    return { root: holder, names: [name], commands: null, cleanup: holder, single: true };
+  }
+
+  const names = list(tmp).filter((n) => has(n, tmp));
+  if (!names.length) {
+    rmSync(tmp, { recursive: true, force: true });
+    die(`${url} has no SKILL.md at its root and no subdirectory containing one`);
+  }
+  return { root: tmp, names, commands: join(tmp, 'commands'), cleanup: tmp };
+}
+
 function cmdInstall(argv) {
   const targets = engines();
   const want = argv.engine && argv.engine !== 'all' ? { [argv.engine]: targets[argv.engine] } : targets;
   if (Object.values(want).some((v) => !v)) die(`unknown engine: ${argv.engine}`);
 
-  const names = argv._.length ? argv._ : list();
-  for (const n of names) if (!has(n)) die(`no such skill: ${n}`);
+  const src = resolveSource(argv);
+  try {
+    for (const n of src.names) if (!has(n, src.root)) die(`no such skill: ${n}`);
+    if (src.cleanup) console.log(`${src.names.length} skill(s) found in source${src.single ? ' (single skill)' : ' (collection)'}`);
 
-  for (const [engine, dir] of Object.entries(want)) {
-    // Only install where the engine actually lives. Creating ~/.kimi-code for
-    // someone who does not use Kimi is litter, not helpfulness.
-    if (!existsSync(dirname(dir))) { console.log(`skip ${engine}: ${dirname(dir)} not present`); continue; }
-    let done = 0, kept = 0;
-    for (const n of names) {
-      const dest = join(dir, n);
-      // Never overwrite a directory this tool did not create: a name collision
-      // with someone's own skill must not silently eat it.
-      if (existsSync(dest) && !existsSync(join(dest, MARKER))) { console.log(`  keep ${n}: exists and was not installed by skills`); kept++; continue; }
-      if (argv['dry-run']) { console.log(`  would install ${n} -> ${dest}`); done++; continue; }
-      rmSync(dest, { recursive: true, force: true });
-      mkdirSync(dest, { recursive: true });
-      cpSync(join(ROOT, n, 'SKILL.md'), join(dest, 'SKILL.md'));
-      if (existsSync(join(ROOT, n, 'eval'))) cpSync(join(ROOT, n, 'eval'), join(dest, 'eval'), { recursive: true });
-      writeFileSync(join(dest, MARKER), `${new Date().toISOString()}\n`);
-      done++;
+    for (const [engine, dir] of Object.entries(want)) {
+      // Only install where the engine actually lives. Creating ~/.kimi-code for
+      // someone who does not use Kimi is litter, not helpfulness.
+      if (!existsSync(dirname(dir))) { console.log(`skip ${engine}: ${dirname(dir)} not present`); continue; }
+      let done = 0, kept = 0;
+      for (const n of src.names) {
+        const dest = join(dir, n);
+        // Never overwrite a directory this tool did not create: a name collision
+        // with someone's own skill must not silently eat it.
+        if (existsSync(dest) && !existsSync(join(dest, MARKER))) { console.log(`  keep ${n}: exists and was not installed by skills`); kept++; continue; }
+        if (argv['dry-run']) { console.log(`  would install ${n} -> ${dest}`); done++; continue; }
+        rmSync(dest, { recursive: true, force: true });
+        mkdirSync(dest, { recursive: true });
+        cpSync(join(src.root, n, 'SKILL.md'), join(dest, 'SKILL.md'));
+        if (existsSync(join(src.root, n, 'eval'))) cpSync(join(src.root, n, 'eval'), join(dest, 'eval'), { recursive: true });
+        writeFileSync(join(dest, MARKER), `${new Date().toISOString()}\n`);
+        done++;
+      }
+      console.log(`${engine}: ${done} skill(s) ${argv['dry-run'] ? 'would be installed' : 'installed'} to ${dir}${kept ? `, ${kept} left alone` : ''}`);
     }
-    console.log(`${engine}: ${done} skill(s) ${argv['dry-run'] ? 'would be installed' : 'installed'} to ${dir}${kept ? `, ${kept} left alone` : ''}`);
-  }
 
-  // The slash command is Claude-only; other engines have no equivalent surface.
-  const cmdSrc = join(ROOT, 'commands', 'skills.md');
-  if (want.claude && existsSync(cmdSrc) && existsSync(dirname(want.claude))) {
-    const cmdDir = join(dirname(want.claude), 'commands');
-    const dest = join(cmdDir, 'skills.md');
-    if (argv['dry-run']) console.log(`  would install /skills -> ${dest}`);
-    else { mkdirSync(cmdDir, { recursive: true }); cpSync(cmdSrc, dest); console.log(`claude: /skills command installed to ${dest}`); }
+    // The slash command is Claude-only; other engines have no equivalent surface.
+    const cmdSrc = src.commands && join(src.commands, 'skills.md');
+    if (want.claude && cmdSrc && existsSync(cmdSrc) && existsSync(dirname(want.claude))) {
+      const cmdDir = join(dirname(want.claude), 'commands');
+      const dest = join(cmdDir, 'skills.md');
+      if (argv['dry-run']) console.log(`  would install /skills -> ${dest}`);
+      else { mkdirSync(cmdDir, { recursive: true }); cpSync(cmdSrc, dest); console.log(`claude: /skills command installed to ${dest}`); }
+    }
+  } finally {
+    if (src.cleanup) rmSync(src.cleanup, { recursive: true, force: true });
   }
 }
 
@@ -199,6 +243,7 @@ const HELP = `skills — CRUD and distribution for a .skills/ directory
   skills verify [name]            run evals, write receipts, rebuild
   skills build                    regenerate skills.json and profile.html
   skills install [names…]         copy skills into each engine's skills dir
+  skills install <git-url>        install a remote skill or collection
     --engine claude|kimi|all      default all present
     --dry-run                     show what would happen
   skills uninstall [--dry-run]    remove only what skills installed

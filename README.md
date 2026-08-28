@@ -77,8 +77,18 @@ create, and `uninstall` removes only what it installed.
 directory, which is right for a single skill and wrong for a collection: every
 engine scans `<skills-dir>/<name>/SKILL.md` at exactly one level, so cloning
 this repo whole buries thirteen skills one level too deep and installs nothing
-discoverable. Same reason a plain `git clone` into `~/.claude/skills` does not
-work. The skills have to be fanned out individually, which is what this does.
+discoverable — silently, because the clone succeeds. Same reason a plain
+`git clone` into `~/.claude/skills` does not work.
+
+`skills install <git-url>` handles both shapes. It clones the source, looks for
+a `SKILL.md` at the root (one skill, named after the repository) and otherwise
+for subdirectories containing one (a collection), then fans out whatever it
+found. It works on any skills repository, not just this one:
+
+```sh
+skills install https://github.com/someone/their-skill.git
+skills install github:someone/their-collection
+```
 
 ## Usage
 
@@ -90,6 +100,7 @@ skills rm <name> --force        # delete a skill and its receipts
 skills verify [name]            # run evals, write receipts, rebuild
 skills build                    # regenerate skills.json and profile.html
 skills install [--dry-run]      # fan out into engine skills dirs
+skills install <git-url>        # install any remote skill or collection
 skills uninstall [--dry-run]    # remove only what skills installed
 ```
 
