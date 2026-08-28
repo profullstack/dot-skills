@@ -17,7 +17,7 @@ const RAN_AT = process.env.SOURCE_DATE || new Date().toISOString();
 const only = process.argv[2];
 
 const dirs = readdirSync(ROOT, { withFileTypes: true })
-  .filter((d) => d.isDirectory() && !d.name.startsWith('.') && !['schema', 'bin', 'receipts', 'node_modules'].includes(d.name))
+  .filter((d) => d.isDirectory() && !d.name.startsWith('.') && !['schema', 'bin', 'receipts', 'commands', 'node_modules'].includes(d.name))
   .map((d) => d.name).sort()
   .filter((n) => !only || n === only);
 

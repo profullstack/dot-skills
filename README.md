@@ -59,14 +59,41 @@ GET https://example.com/.well-known/skills.json
 so the profile is self-hosted rather than platform-held. Humans and agents
 publish the same document — `profile.kind` is `human`, `agent` or `team`.
 
+## Install
+
+```sh
+npx @profullstack/dot-skills install     # or clone and run bin/skills.mjs
+```
+
+That copies each skill into every engine skills directory present on the
+machine (`~/.claude/skills`, `$KIMI_CODE_HOME/skills`) and installs a `/skills`
+slash command for Claude Code. `install` never overwrites a directory it did not
+create, and `uninstall` removes only what it installed.
+
+**Why not `moshcode skill install`?** That clones one repository into one skill
+directory, which is right for a single skill and wrong for a collection: every
+engine scans `<skills-dir>/<name>/SKILL.md` at exactly one level, so cloning
+this repo whole buries thirteen skills one level too deep and installs nothing
+discoverable. Same reason a plain `git clone` into `~/.claude/skills` does not
+work. The skills have to be fanned out individually, which is what this does.
+
 ## Usage
 
 ```sh
-node bin/verify.mjs            # run every executable eval, write receipts
-node bin/verify.mjs <skill>    # just one
-node bin/build.mjs             # regenerate skills.json
-node bin/render.mjs            # regenerate profile.html
+skills list                     # every skill with its assurance level
+skills show <name>              # print one SKILL.md
+skills new <name> [--kind K]    # scaffold (diagnostic|constraint|procedure|recipe)
+skills rm <name> --force        # delete a skill and its receipts
+skills verify [name]            # run evals, write receipts, rebuild
+skills build                    # regenerate skills.json and profile.html
+skills install [--dry-run]      # fan out into engine skills dirs
+skills uninstall [--dry-run]    # remove only what skills installed
 ```
+
+In Claude Code the same verbs are available as `/skills <verb>`.
+
+A scaffolded skill starts at `asserted`, and nothing in the frontmatter can
+raise that: the level is derived from whether an eval actually ran.
 
 `build.mjs` fails loudly on a `requires` edge pointing at a skill that does not
 exist — the graph is checked, not decorative. `verify.mjs` treats exit code 77

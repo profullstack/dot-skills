@@ -42,7 +42,7 @@ function parseScalar(raw) {
 const days = (a, b) => Math.floor((a - b) / 86400000);
 
 const skillDirs = readdirSync(ROOT, { withFileTypes: true })
-  .filter((d) => d.isDirectory() && !d.name.startsWith('.') && !['schema', 'bin', 'receipts', 'node_modules'].includes(d.name))
+  .filter((d) => d.isDirectory() && !d.name.startsWith('.') && !['schema', 'bin', 'receipts', 'commands', 'node_modules'].includes(d.name))
   .map((d) => d.name).sort();
 
 const skills = [];

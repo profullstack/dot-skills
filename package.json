@@ -1,0 +1,17 @@
+{
+  "name": "@profullstack/dot-skills",
+  "version": "0.1.0",
+  "description": "A portable, verifiable inventory of agent-executable skills. Every entry states how far it has actually been proven.",
+  "type": "module",
+  "bin": { "skills": "./bin/skills.mjs" },
+  "files": ["bin", "schema", "commands", "*/SKILL.md", "*/eval", "skills.json", "README.md"],
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "build": "node bin/build.mjs && node bin/render.mjs",
+    "verify": "node bin/verify.mjs",
+    "test": "node bin/verify.mjs"
+  },
+  "keywords": ["skills", "agent-skills", "claude-code", "skill-md", "verifiable"],
+  "repository": { "type": "git", "url": "git+https://github.com/profullstack/dot-skills.git" },
+  "license": "MIT"
+}
