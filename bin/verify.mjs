@@ -17,7 +17,7 @@ const RAN_AT = process.env.SOURCE_DATE || new Date().toISOString();
 const only = process.argv[2];
 
 const dirs = readdirSync(ROOT, { withFileTypes: true })
-  .filter((d) => d.isDirectory() && !['schema', 'bin', 'receipts', 'node_modules'].includes(d.name))
+  .filter((d) => d.isDirectory() && !d.name.startsWith('.') && !['schema', 'bin', 'receipts', 'node_modules'].includes(d.name))
   .map((d) => d.name).sort()
   .filter((n) => !only || n === only);
 
@@ -57,6 +57,18 @@ for (const name of dirs) {
   const rPath = join(RECEIPTS, `${name}.json`);
   const prior = existsSync(rPath) ? JSON.parse(readFileSync(rPath, 'utf8')) : [];
   prior.push({ digest, ran_at: RAN_AT, model: MODEL, passed: ok, total, ...(note ? { note } : {}) });
-  writeFileSync(rPath, JSON.stringify(prior, null, 2) + '\n');
+  // Keep a bounded run log, newest first: unbounded identical receipts are
+  // noise, and only the most recent run per digest carries information.
+  const kept = prior.sort((a, b) => new Date(b.ran_at) - new Date(a.ran_at)).slice(0, 10);
+  writeFileSync(rPath, JSON.stringify(kept, null, 2) + '\n');
 }
 console.log(`\n${ran} skill(s) executed, ${passed} fully passing, ${skipped} declarative-only`);
+
+// Receipts changed, so the derived files are now stale. Regenerate them here
+// rather than trusting anyone to remember - a committed skills.json that
+// disagrees with receipts/ is exactly the drift this format exists to prevent.
+if (!only) {
+  for (const step of ['build.mjs', 'render.mjs']) {
+    execFileSync(process.execPath, [join(ROOT, 'bin', step)], { stdio: 'inherit' });
+  }
+}

@@ -1,5 +1,6 @@
 // Asserts the FTS5 claim end-to-end against a real in-process SQLite.
-// Requires Node >= 22 (node:sqlite). Exit 0 = claim holds.
+// Requires Node 24+ (node:sqlite stable; Node 22 needs --experimental-sqlite).
+// Exit 0 = claim holds.
 import { DatabaseSync } from 'node:sqlite';
 
 const db = new DatabaseSync(':memory:');

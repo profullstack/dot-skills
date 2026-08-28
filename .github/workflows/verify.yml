@@ -1,0 +1,35 @@
+name: verify
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      # The index and the profile are derived. If either disagrees with the
+      # SKILL.md files and receipts committed alongside them, the repository is
+      # asserting something its own sources do not support.
+      - name: skills.json and profile.html are up to date
+        run: |
+          node bin/build.mjs
+          node bin/render.mjs
+          git diff --exit-code -- skills.json profile.html
+
+      - name: skills.json validates against the schema
+        run: npx --yes ajv-cli@5 validate -s schema/skills-index.schema.json -d skills.json --spec=draft2020 --strict=false
+
+      # Runs every executable eval on a machine that is not the author's.
+      # Receipts written here are discarded: this proves the cases pass, it does
+      # not mint a credential. Notarisation needs a signature, not a green tick.
+      - name: executable evals pass
+        run: node bin/verify.mjs
