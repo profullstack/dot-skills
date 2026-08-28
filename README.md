@@ -62,8 +62,11 @@ publish the same document — `profile.kind` is `human`, `agent` or `team`.
 ## Install
 
 ```sh
-npx @profullstack/dot-skills install     # or clone and run bin/skills.mjs
+npx github:profullstack/dot-skills install
 ```
+
+Not yet on npm, so install from the repository. Verified working end to end,
+including the `/skills` command.
 
 That copies each skill into every engine skills directory present on the
 machine (`~/.claude/skills`, `$KIMI_CODE_HOME/skills`) and installs a `/skills`
