@@ -1,0 +1,362 @@
+<title>Proof of Skill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F5F7FA; --surface:#FFFFFF; --sunken:#EDF0F5;
+  --ink:#171A21; --muted:#5C6676; --faint:#8B94A3; --rule:#DDE2EA;
+  --accent:#2B4B8C; --accent-soft:#E7EDF9;
+  --lv-notarised:#2B4B8C; --lv-self:#1F7A5C; --lv-field:#8A6A1F; --lv-asserted:#7A8290;
+  --shadow:0 1px 2px rgba(23,26,33,.05), 0 8px 24px -16px rgba(23,26,33,.25);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+  --ground:#0E1116; --surface:#161A21; --sunken:#1D222B;
+  --ink:#E7EAF0; --muted:#9BA5B4; --faint:#6E7889; --rule:#262D38;
+  --accent:#89A9EC; --accent-soft:#1B2537;
+  --lv-notarised:#89A9EC; --lv-self:#4FBF95; --lv-field:#D6A94A; --lv-asserted:#8B94A3;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+}
+:root[data-theme="dark"]{
+  --ground:#0E1116; --surface:#161A21; --sunken:#1D222B;
+  --ink:#E7EAF0; --muted:#9BA5B4; --faint:#6E7889; --rule:#262D38;
+  --accent:#89A9EC; --accent-soft:#1B2537;
+  --lv-notarised:#89A9EC; --lv-self:#4FBF95; --lv-field:#D6A94A; --lv-asserted:#8B94A3;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font:400 16px/1.6 "IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.wrap{max-width:1180px;margin:0 auto;padding:clamp(28px,5vw,64px) clamp(20px,4vw,40px) 96px}
+
+.masthead{border-bottom:1px solid var(--rule);padding-bottom:28px;margin-bottom:36px}
+.eyebrow{font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 18px}
+.masthead h1{font:600 clamp(34px,5.2vw,52px)/1.05 Newsreader,Georgia,serif;letter-spacing:-.015em;
+  margin:0 0 10px;text-wrap:balance}
+.headline{font:italic 400 clamp(17px,2.2vw,20px)/1.45 Newsreader,Georgia,serif;
+  color:var(--muted);margin:0 0 22px;max-width:52ch}
+.ident{display:flex;flex-wrap:wrap;gap:8px 22px;font:400 13px/1.5 "IBM Plex Mono",monospace;color:var(--faint)}
+.ident b{color:var(--muted);font-weight:500}
+
+.thesis{background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+  padding:clamp(20px,3vw,30px);margin-bottom:40px;box-shadow:var(--shadow)}
+.thesis h2{font:600 20px/1.3 Newsreader,Georgia,serif;margin:0 0 8px}
+.thesis > p{color:var(--muted);margin:0 0 22px;max-width:66ch;font-size:15px}
+.bar{display:flex;height:9px;border-radius:2px;overflow:hidden;gap:2px;margin-bottom:22px}
+.seg{display:block}
+.seg[data-level="notarised"]{background:var(--lv-notarised)}
+.seg[data-level="self-verified"]{background:var(--lv-self)}
+.seg[data-level="field-observed"]{background:var(--lv-field)}
+.seg[data-level="asserted"]{background:var(--lv-asserted)}
+.ladder{list-style:none;margin:0;padding:0;display:grid;gap:14px;
+  grid-template-columns:repeat(auto-fit,minmax(215px,1fr))}
+.ladder li{display:flex;gap:10px;align-items:flex-start}
+.dot{width:9px;height:9px;border-radius:50%;margin-top:6px;flex:none;background:var(--lv-asserted)}
+li[data-level="notarised"] .dot{background:var(--lv-notarised)}
+li[data-level="self-verified"] .dot{background:var(--lv-self)}
+li[data-level="field-observed"] .dot{background:var(--lv-field)}
+.lv-name{margin:0 0 3px;font-weight:600;font-size:14px}
+.lv-name b{font:500 12px/1 "IBM Plex Mono",monospace;color:var(--faint);margin-left:4px}
+.lv-blurb{margin:0;font-size:13px;line-height:1.5;color:var(--muted)}
+
+.sect{font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--faint);margin:0 0 16px;padding-bottom:10px;border-bottom:1px solid var(--rule)}
+.list{display:grid;gap:14px}
+.skill{display:flex;background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+  overflow:hidden;box-shadow:var(--shadow)}
+.stripe{width:3px;flex:none;background:var(--lv-asserted)}
+.skill[data-level="notarised"] .stripe{background:var(--lv-notarised)}
+.skill[data-level="self-verified"] .stripe{background:var(--lv-self)}
+.skill[data-level="field-observed"] .stripe{background:var(--lv-field)}
+.card{padding:18px 22px 20px;flex:1;min-width:0}
+.card header{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:7px}
+.card h3{font:500 17px/1.3 "IBM Plex Mono",monospace;margin:0;letter-spacing:-.01em;word-break:break-word}
+.chip{font:500 10px/1 "IBM Plex Mono",monospace;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--accent);background:var(--accent-soft);padding:4px 7px;border-radius:2px}
+.fresh{margin-left:auto;font:500 10px/1 "IBM Plex Mono",monospace;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--faint);border:1px solid var(--rule);padding:4px 7px;border-radius:2px}
+.fresh[data-f="live"]{color:var(--lv-self);border-color:var(--lv-self)}
+.fresh[data-f="dormant"]{color:var(--lv-field);border-color:var(--lv-field)}
+.desc{margin:0 0 14px;color:var(--muted);font-size:14.5px;max-width:74ch}
+.meta{display:grid;gap:6px 26px;grid-template-columns:repeat(auto-fit,minmax(190px,auto));
+  margin:0 0 12px;justify-content:start}
+.meta div{display:flex;gap:8px;font-size:12.5px;min-width:0}
+.meta dt{color:var(--faint);flex:none}
+.meta dd{margin:0;color:var(--muted);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.meta code{font:400 12px/1 "IBM Plex Mono",monospace;background:var(--sunken);padding:2px 5px;border-radius:2px}
+.domains{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.domains span{font:400 11px/1 "IBM Plex Mono",monospace;color:var(--faint);
+  border:1px solid var(--rule);padding:4px 7px;border-radius:2px}
+.edge{margin:11px 0 0;font-size:12.5px;color:var(--faint)}
+.edge b{font:500 12.5px/1 "IBM Plex Mono",monospace;color:var(--muted);font-weight:500}
+
+.note{margin-top:40px;padding:22px 24px;border:1px solid var(--rule);border-left:3px solid var(--accent);
+  border-radius:3px;background:var(--surface)}
+.note h2{font:600 17px/1.3 Newsreader,Georgia,serif;margin:0 0 8px}
+.note p{margin:0 0 10px;color:var(--muted);font-size:14.5px;max-width:70ch}
+.note p:last-child{margin-bottom:0}
+.note code{font:400 13px/1 "IBM Plex Mono",monospace;background:var(--sunken);padding:2px 5px;border-radius:2px}
+footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--rule);
+  font:400 12px/1.6 "IBM Plex Mono",monospace;color:var(--faint)}
+@media (max-width:620px){ .fresh{margin-left:0} }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">skills.json · v0</p>
+    <h1>Anthony Ettinger</h1>
+    <p class="headline">Failure modes paid for in production, written down so they run.</p>
+    <div class="ident">
+      <span><b>13</b> skills</span>
+      <span><b>human</b> profile</span>
+      <span>https://profullstack.com/.well-known/skills.json</span>
+      <span>generated 2026-08-28</span>
+    </div>
+  </header>
+
+  <section class="thesis">
+    <h2>Every skill states how much it has actually been proven</h2>
+    <p>A skill file is executable, so a claim about it can be run rather than endorsed.
+       Each entry below sits on one of four rungs. Most of this profile is on the third:
+       these failure modes were paid for in production, but only two can be reproduced on
+       demand today. Saying so is the point — a profile where everything looked verified
+       would be the untrustworthy one.</p>
+    <div class="bar" role="img" aria-label="Distribution of skills across assurance levels"><span class="seg" data-level="self-verified" style="flex:2"><span class="sr">2 Self-verified</span></span><span class="seg" data-level="field-observed" style="flex:11"><span class="sr">11 Field-observed</span></span></div>
+    <ul class="ladder">
+      <li data-level="notarised">
+        <span class="dot"></span>
+        <div>
+          <p class="lv-name">Notarised <b>0</b></p>
+          <p class="lv-blurb">A third party ran the eval and signed the result. The only tier that is a credential.</p>
+        </div>
+      </li>
+      <li data-level="self-verified">
+        <span class="dot"></span>
+        <div>
+          <p class="lv-name">Self-verified <b>2</b></p>
+          <p class="lv-blurb">An eval case runs and passes here, bound to this exact file.</p>
+        </div>
+      </li>
+      <li data-level="field-observed">
+        <span class="dot"></span>
+        <div>
+          <p class="lv-name">Field-observed <b>11</b></p>
+          <p class="lv-blurb">The fix was seen to work in production. Real, but not reproducible on demand.</p>
+        </div>
+      </li>
+      <li data-level="asserted">
+        <span class="dot"></span>
+        <div>
+          <p class="lv-name">Asserted <b>0</b></p>
+          <p class="lv-blurb">Written down and nothing more. This is what a LinkedIn skill is.</p>
+        </div>
+      </li></ul>
+  </section>
+
+  <h2 class="sect">Skills · strongest assurance first</h2>
+  <div class="list">
+      <article class="skill" data-level="self-verified">
+        <div class="stripe" aria-hidden="true"></div>
+        <div class="card">
+          <header>
+            <h3>fts5-raw-input-is-a-query</h3>
+            <span class="chip">recipe</span>
+            <span class="fresh" data-f="live">live</span>
+          </header>
+          <p class="desc">SQLite FTS5 MATCH takes a query language, not a string, so raw user input errors on almost any punctuation. Use when building or debugging full-text search over FTS5, especially where users paste error messages.</p>
+          <dl class="meta"><div><dt>Verified against</dt><dd>node:sqlite / SQLite 3.50 FTS5, Node 24.18.1</dd></div><div><dt>Digest</dt><dd><code>3443e5712901…</code></dd></div><div><dt>Eval</dt><dd>1 case · executable</dd></div><div><dt>Paid for in</dt><dd>profullstack/bufferoverride</dd></div><div><dt>Last run</dt><dd>2026-08-28 · 1/1 · node v24.18.1 / linux</dd></div></dl>
+          <p class="domains"><span>sqlite</span><span>fts5</span><span>search</span></p>
+          
+        </div>
+      </article>
+      <article class="skill" data-level="self-verified">
+        <div class="stripe" aria-hidden="true"></div>
+        <div class="card">
+          <header>
+            <h3>git-stash-shared-across-worktrees</h3>
+            <span class="chip">constraint</span>
+            <span class="fresh" data-f="live">live</span>
+          </header>
+          <p class="desc">git stash is one stack per repository, shared by every worktree, so parallel agents silently pop each other's entries. Use when coordinating concurrent work in git worktrees, or when edits vanish and are replaced by someone else's.</p>
+          <dl class="meta"><div><dt>Verified against</dt><dd>git 2.43+</dd></div><div><dt>Digest</dt><dd><code>7fee16936520…</code></dd></div><div><dt>Eval</dt><dd>1 case · executable</dd></div><div><dt>Paid for in</dt><dd>profullstack/threatcrush</dd></div><div><dt>Last run</dt><dd>2026-08-28 · 1/1 · node v24.18.1 / linux</dd></div></dl>
+          <p class="domains"><span>git</span><span>worktrees</span><span>concurrency</span></p>
+          
+        </div>
+      </article>
+      <article class="skill" data-level="field-observed">
+        <div class="stripe" aria-hidden="true"></div>
+        <div class="card">
+          <header>
+            <h3>bullmq-jobid-no-colon</h3>
+            <span class="chip">constraint</span>
+            <span class="fresh" data-f="dormant">dormant</span>
+          </header>
+          <p class="desc">BullMQ rejects a custom jobId containing &quot;:&quot; unless it splits into exactly 3 parts, and a jobId derived from state the job itself resets silently dedupes the work away. Use when adding or debugging BullMQ jobs with custom ids.</p>
+          <dl class="meta"><div><dt>Verified against</dt><dd>bullmq 5.81.3</dd></div><div><dt>Digest</dt><dd><code>6010bd90b5f3…</code></dd></div><div><dt>Eval</dt><dd>1 case · declarative</dd></div><div><dt>Paid for in</dt><dd>tipoffwatch</dd></div></dl>
+          <p class="domains"><span>bullmq</span><span>redis</span><span>queues</span></p>
+          
+        </div>
+      </article>
+      <article class="skill" data-level="field-observed">
+        <div class="stripe" aria-hidden="true"></div>
+        <div class="card">
+          <header>
+            <h3>bun-sql-array-params</h3>
+            <span class="chip">recipe</span>
+            <span class="fresh" data-f="dormant">dormant</span>
+          </header>
+          <p class="desc">Bun's built-in Postgres client stringifies a JS array as `a,b` instead of a Postgres array literal, failing with three different unhelpful errors. Use when Bun + Postgres queries touch text[], int[] or uuid[] columns.</p>
+          <dl class="meta"><div><dt>Verified against</dt><dd>Bun 1.3, import { SQL } from 'bun'</dd></div><div><dt>Digest</dt><dd><code>c108f7be3db2…</code></dd></div><div><dt>Eval</dt><dd>1 case · declarative</dd></div><div><dt>Paid for in</dt><dd>tipoffwatch</dd></div></dl>
+          <p class="domains"><span>bun</span><span>postgres</span><span>sql</span></p>
+          
+        </div>
+      </article>
+      <article class="skill" data-level="field-observed">
+        <div class="stripe" aria-hidden="true"></div>
+        <div class="card">
+          <header>
+            <h3>codeql-green-check-not-proof</h3>
+            <span class="chip">procedure</span>
+            <span class="fresh" data-f="dormant">dormant</span>
+          </header>
+          <p class="desc">A green CodeQL PR check only means no NEW alerts versus base; it never proves an existing alert was fixed. Use before reporting a security alert as resolved on the strength of a passing check.</p>
+          <dl class="meta"><div><dt>Verified against</dt><dd>GitHub code-scanning API</dd></div><div><dt>Digest</dt><dd><code>bfd91f23726b…</code></dd></div><div><dt>Eval</dt><dd>1 case · declarative</dd></div><div><dt>Paid for in</dt><dd>profullstack/threatcrush</dd></div></dl>
+          <p class="domains"><span>codeql</span><span>github</span><span>security</span></p>
+          
+        </div>
+      </article>
+      <article class="skill" data-level="field-observed">
+        <div class="stripe" aria-hidden="true"></div>
+        <div class="card">
+          <header>
+            <h3>dependabot-supersede-drops-your-commits</h3>
+            <span class="chip">procedure</span>
+            <span class="fresh" data-f="dormant">dormant</span>
+          </header>
+          <p class="desc">Dependabot deletes and replaces its own branch when base changes, silently dropping any fix you pushed onto it. Use when a Dependabot bump needs an accompanying code change to go green.</p>
+          <dl class="meta"><div><dt>Verified against</dt><dd>GitHub Dependabot</dd></div><div><dt>Digest</dt><dd><code>938676bbe738…</code></dd></div><div><dt>Eval</dt><dd>1 case · declarative</dd></div><div><dt>Paid for in</dt><dd>media-streamer</dd></div></dl>
+          <p class="domains"><span>dependabot</span><span>github</span><span>ci</span></p>
+          <p class="edge">composes with <b>pnpm-override-floors-go-stale</b></p>
+        </div>
+      </article>
+      <article class="skill" data-level="field-observed">
+        <div class="stripe" aria-hidden="true"></div>
+        <div class="card">
+          <header>
+            <h3>libsql-undefined-unbindable-remote-only</h3>
+            <span class="chip">diagnostic</span>
+            <span class="fresh" data-f="dormant">dormant</span>
+          </header>
+          <p class="desc">libSQL binding `undefined` throws on the remote client but binds as null on a local file DB, so local tests never catch it. Use when a libSQL/Turso app fails only in production, or when &quot;Unsupported type of value&quot; appears with no column name.</p>
+          <dl class="meta"><div><dt>Verified against</dt><dd>@libsql/hrana-client, remote https:// URL</dd></div><div><dt>Digest</dt><dd><code>46e45190b7cd…</code></dd></div><div><dt>Eval</dt><dd>1 case · declarative</dd></div><div><dt>Paid for in</dt><dd>profullstack/rssamplifier</dd></div></dl>
+          <p class="domains"><span>libsql</span><span>turso</span><span>sqlite</span><span>testing</span></p>
+          
+        </div>
+      </article>
+      <article class="skill" data-level="field-observed">
+        <div class="stripe" aria-hidden="true"></div>
+        <div class="card">
+          <header>
+            <h3>mixed-content-beats-csp</h3>
+            <span class="chip">diagnostic</span>
+            <span class="fresh" data-f="dormant">dormant</span>
+          </header>
+          <p class="desc">An http:// frame or media source on an https page is blockable mixed content and cannot be allowed back in by loosening CSP. Use when a console CSP error points at an http:// resource and the obvious fix is to widen the policy.</p>
+          <dl class="meta"><div><dt>Verified against</dt><dd>Chromium, https origin</dd></div><div><dt>Digest</dt><dd><code>eb3fe8050726…</code></dd></div><div><dt>Eval</dt><dd>1 case · declarative</dd></div><div><dt>Paid for in</dt><dd>profullstack/rssamplifier</dd></div></dl>
+          <p class="domains"><span>csp</span><span>browsers</span><span>security</span></p>
+          
+        </div>
+      </article>
+      <article class="skill" data-level="field-observed">
+        <div class="stripe" aria-hidden="true"></div>
+        <div class="card">
+          <header>
+            <h3>nextjs-client-module-exports-are-references</h3>
+            <span class="chip">constraint</span>
+            <span class="fresh" data-f="dormant">dormant</span>
+          </header>
+          <p class="desc">Every export of a 'use client' module becomes a client reference when a server component imports it, so a constant compares as a proxy and the comparison silently fails. Use when a conditionally-rendered client component never appears and throws no error.</p>
+          <dl class="meta"><div><dt>Verified against</dt><dd>Next 16.3, React 19</dd></div><div><dt>Digest</dt><dd><code>8455c398d58f…</code></dd></div><div><dt>Eval</dt><dd>1 case · declarative</dd></div><div><dt>Paid for in</dt><dd>profullstack/rssamplifier</dd></div></dl>
+          <p class="domains"><span>nextjs</span><span>react</span><span>app-router</span></p>
+          <p class="edge">composes with <b>nextjs-inlines-process-env</b></p>
+        </div>
+      </article>
+      <article class="skill" data-level="field-observed">
+        <div class="stripe" aria-hidden="true"></div>
+        <div class="card">
+          <header>
+            <h3>nextjs-inlines-process-env</h3>
+            <span class="chip">constraint</span>
+            <span class="fresh" data-f="dormant">dormant</span>
+          </header>
+          <p class="desc">Next.js statically replaces process.env.NAME at build time, including in server code, so a runtime secret compiles in as undefined permanently. Use when a deployed Next app 401s but the same credentials work by curl.</p>
+          <dl class="meta"><div><dt>Verified against</dt><dd>Next.js App Router, containerised build</dd></div><div><dt>Digest</dt><dd><code>f8bacbd7127d…</code></dd></div><div><dt>Eval</dt><dd>1 case · declarative</dd></div><div><dt>Paid for in</dt><dd>outreachgraph</dd></div></dl>
+          <p class="domains"><span>nextjs</span><span>docker</span><span>secrets</span></p>
+          
+        </div>
+      </article>
+      <article class="skill" data-level="field-observed">
+        <div class="stripe" aria-hidden="true"></div>
+        <div class="card">
+          <header>
+            <h3>npm-first-publish-404-window</h3>
+            <span class="chip">diagnostic</span>
+            <span class="fresh" data-f="dormant">dormant</span>
+          </header>
+          <p class="desc">A brand-new scoped npm package 404s on every read path for minutes after a successful publish. Use before re-publishing, bumping a version, or concluding a token is broken.</p>
+          <dl class="meta"><div><dt>Verified against</dt><dd>registry.npmjs.org, first publish of a new scoped name</dd></div><div><dt>Digest</dt><dd><code>0067948f5865…</code></dd></div><div><dt>Eval</dt><dd>1 case · declarative</dd></div><div><dt>Paid for in</dt><dd>@profullstack/bufferoverride@0.1.0</dd></div></dl>
+          <p class="domains"><span>npm</span><span>registry</span><span>release</span></p>
+          
+        </div>
+      </article>
+      <article class="skill" data-level="field-observed">
+        <div class="stripe" aria-hidden="true"></div>
+        <div class="card">
+          <header>
+            <h3>pnpm-override-floors-go-stale</h3>
+            <span class="chip">constraint</span>
+            <span class="fresh" data-f="dormant">dormant</span>
+          </header>
+          <p class="desc">A '&gt;=X' pnpm override resolves once and the lockfile pins it, so the override protecting you becomes what holds you on a vulnerable version and Dependabot reports security_update_not_possible. Use when a security PR fails to open or an override does not seem to take.</p>
+          <dl class="meta"><div><dt>Verified against</dt><dd>pnpm workspaces, pnpm-lock.yaml</dd></div><div><dt>Digest</dt><dd><code>36a040f00312…</code></dd></div><div><dt>Eval</dt><dd>1 case · declarative</dd></div><div><dt>Paid for in</dt><dd>coinpayportal</dd></div></dl>
+          <p class="domains"><span>pnpm</span><span>dependabot</span><span>security</span></p>
+          
+        </div>
+      </article>
+      <article class="skill" data-level="field-observed">
+        <div class="stripe" aria-hidden="true"></div>
+        <div class="card">
+          <header>
+            <h3>turso-request-size-ceiling</h3>
+            <span class="chip">constraint</span>
+            <span class="fresh" data-f="dormant">dormant</span>
+          </header>
+          <p class="desc">Turso/libSQL accepts at least a 32 MiB bound argument in one execute; the published limits page 404s and web search has no number. Use before sizing a column cap or chunking writes around a guessed HTTP limit.</p>
+          <dl class="meta"><div><dt>Verified against</dt><dd>Turso hosted, rssamplifier prod database, 2026-08-17</dd></div><div><dt>Digest</dt><dd><code>e40c1820dae3…</code></dd></div><div><dt>Eval</dt><dd>1 case · executable</dd></div><div><dt>Paid for in</dt><dd>profullstack/rssamplifier</dd></div></dl>
+          <p class="domains"><span>turso</span><span>libsql</span></p>
+          <p class="edge">composes with <b>libsql-undefined-unbindable-remote-only</b></p>
+        </div>
+      </article></div>
+
+  <section class="note">
+    <h2>Why a receipt is bound to a hash</h2>
+    <p>Each receipt records the <code>SKILL.md</code> digest it attests to. Edit a skill and its
+       receipts stop matching, so the entry drops from self-verified back to field-observed
+       until the eval is run again. Verified content cannot be quietly swapped for different
+       content — the property that makes the ladder worth reading.</p>
+    <p>One entry earned its rung the hard way. <code>fts5-raw-input-is-a-query</code> claimed for
+       four months that a hyphen made SQLite parse <code>catch-all</code> as <code>catch NOT all</code>.
+       Running the case showed it raises <code>no such column: all</code> instead. The prose was
+       wrong, the eval caught it in one run, and the skill now documents measured behaviour.</p>
+    <p>No entry is notarised, because nothing here has been run by anyone but its author.
+       Self-reported receipts are still self-reported. That rung stays empty until someone
+       else's runner signs a result.</p>
+  </section>
+
+  <footer>Rendered from skills.json · discoverable at /.well-known/skills.json · rebuild with bin/build.mjs, verify with bin/verify.mjs</footer>
+</div>

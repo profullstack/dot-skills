@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/schema/v0/skills-index.json",
+  "title": "skills.json",
+  "description": "A portable, verifiable inventory of agent-executable skills. Discoverable at /.well-known/skills.json or in a repository's top-level .skills/ directory.",
+  "type": "object",
+  "required": ["version", "profile", "skills"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": "0" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "profile": {
+      "type": "object",
+      "required": ["id", "name", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri",
+          "description": "Stable identity. A domain the subject controls, so the profile is self-hosted rather than platform-held."
+        },
+        "name": { "type": "string" },
+        "kind": {
+          "enum": ["human", "agent", "team"],
+          "description": "Humans and agents publish the same document. That is the point."
+        },
+        "headline": { "type": "string", "maxLength": 200 },
+        "model": {
+          "type": "string",
+          "description": "For kind=agent: the model the skills were authored against and are claimed to work on."
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["rel", "href"],
+            "properties": {
+              "rel": { "type": "string" },
+              "href": { "type": "string", "format": "uri" }
+            }
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/skill" }
+    }
+  },
+  "$defs": {
+    "skill": {
+      "type": "object",
+      "required": ["name", "path", "description", "digest", "kind", "assurance"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "description": "Slug, unique within the profile."
+        },
+        "path": { "type": "string", "description": "Path to the SKILL.md, relative to skills.json." },
+        "description": { "type": "string", "maxLength": 400 },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "Content hash of SKILL.md. A receipt is bound to a digest, so editing a skill invalidates its receipts. This is what stops a verified skill being quietly swapped for a different one."
+        },
+        "kind": {
+          "enum": ["diagnostic", "constraint", "procedure", "recipe"],
+          "description": "diagnostic: recognise a misleading symptom. constraint: a hard rule of some system. procedure: a sequence to follow. recipe: a reusable implementation."
+        },
+        "domains": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Technologies the skill applies to. The search index, and the input to staleness."
+        },
+        "requires": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Skill names this one composes with. These are the edges of the graph -- the honest replacement for connections."
+        },
+        "origin": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "authored": { "type": "string", "format": "date" },
+            "discovered_in": { "type": "string", "description": "The project where the lesson was actually paid for." },
+            "evidence": { "type": "string", "description": "A PR, commit, incident or log the claim can be chased to." },
+            "forked_from": { "type": "string", "format": "uri" }
+          }
+        },
+        "assurance": {
+          "type": "object",
+          "description": "The whole reason this format exists. Separates what has been proven from what is merely asserted.",
+          "required": ["level"],
+          "additionalProperties": false,
+          "properties": {
+            "level": {
+              "enum": ["asserted", "field-observed", "self-verified", "notarised"],
+              "description": "asserted: written down, nothing more. field-observed: the fix was seen to work in production, but not reproducibly. self-verified: an eval case runs and passes on the author's own machine. notarised: a third party ran the eval and signed the result. Only the last is a credential; the first is a LinkedIn skill."
+            },
+            "verified_against": {
+              "type": "string",
+              "description": "The exact version, model or service the claim was checked against. Absent means the claim floats."
+            },
+            "last_verified": { "type": "string", "format": "date" },
+            "stale_after_days": {
+              "type": "integer",
+              "description": "How long a verification stays meaningful for this domain. A pinned library constraint ages slowly; a hosted-API behaviour ages fast."
+            },
+            "eval": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": { "type": "string" },
+                "cases": { "type": "integer" },
+                "runnable": {
+                  "type": "boolean",
+                  "description": "false means the case is written but needs a harness or credentials to execute. An honest profile says so."
+                }
+              }
+            },
+            "receipts": {
+              "type": "array",
+              "description": "Signed records of an eval run. Empty is the correct value until someone actually runs it.",
+              "items": {
+                "type": "object",
+                "required": ["digest", "ran_at", "model", "passed", "total"],
+                "properties": {
+                  "digest": { "type": "string", "description": "The SKILL.md digest this run attests to." },
+                  "ran_at": { "type": "string", "format": "date-time" },
+                  "model": { "type": "string" },
+                  "passed": { "type": "integer" },
+                  "total": { "type": "integer" },
+                  "notary": { "type": "string", "format": "uri" },
+                  "signature": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "freshness": {
+          "enum": ["live", "dormant", "overdue", "unverified"],
+          "description": "Derived, never authored. live: verified inside stale_after_days. overdue: verification has aged out. dormant: no eval exists but the skill is field-observed. unverified: asserted only."
+        }
+      }
+    }
+  }
+}

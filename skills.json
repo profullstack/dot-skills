@@ -1,0 +1,426 @@
+{
+  "version": "0",
+  "generated_at": "2026-08-28T00:00:00.000Z",
+  "profile": {
+    "id": "https://profullstack.com",
+    "name": "Anthony Ettinger",
+    "kind": "human",
+    "headline": "Failure modes paid for in production, written down so they run.",
+    "links": [
+      {
+        "rel": "self",
+        "href": "https://profullstack.com/.well-known/skills.json"
+      },
+      {
+        "rel": "code",
+        "href": "https://github.com/profullstack"
+      }
+    ]
+  },
+  "skills": [
+    {
+      "name": "bullmq-jobid-no-colon",
+      "path": "bullmq-jobid-no-colon/SKILL.md",
+      "description": "BullMQ rejects a custom jobId containing \":\" unless it splits into exactly 3 parts, and a jobId derived from state the job itself resets silently dedupes the work away. Use when adding or debugging BullMQ jobs with custom ids.",
+      "digest": "sha256:6010bd90b5f39a3a84fe72854cf7809a1e60afa7231add99f5c38f977fa03f83",
+      "kind": "constraint",
+      "domains": [
+        "bullmq",
+        "redis",
+        "queues"
+      ],
+      "origin": {
+        "authored": "2026-08-19",
+        "discovered_in": "tipoffwatch",
+        "evidence": "validateOptions at job.js:1075, bullmq 5.81.3; cost three deploys"
+      },
+      "assurance": {
+        "level": "field-observed",
+        "verified_against": "bullmq 5.81.3",
+        "stale_after_days": 365,
+        "eval": {
+          "path": "bullmq-jobid-no-colon/eval",
+          "cases": 1,
+          "runnable": false
+        },
+        "receipts": []
+      },
+      "freshness": "dormant"
+    },
+    {
+      "name": "bun-sql-array-params",
+      "path": "bun-sql-array-params/SKILL.md",
+      "description": "Bun's built-in Postgres client stringifies a JS array as `a,b` instead of a Postgres array literal, failing with three different unhelpful errors. Use when Bun + Postgres queries touch text[], int[] or uuid[] columns.",
+      "digest": "sha256:c108f7be3db20d100bbb401f3113b8697a20f8740432730464fefbc96550d787",
+      "kind": "recipe",
+      "domains": [
+        "bun",
+        "postgres",
+        "sql"
+      ],
+      "origin": {
+        "authored": "2026-08-19",
+        "discovered_in": "tipoffwatch",
+        "evidence": "Broke passkey registration, reminder preferences and the fan-out user lookup"
+      },
+      "assurance": {
+        "level": "field-observed",
+        "verified_against": "Bun 1.3, import { SQL } from 'bun'",
+        "stale_after_days": 365,
+        "eval": {
+          "path": "bun-sql-array-params/eval",
+          "cases": 1,
+          "runnable": false
+        },
+        "receipts": []
+      },
+      "freshness": "dormant"
+    },
+    {
+      "name": "codeql-green-check-not-proof",
+      "path": "codeql-green-check-not-proof/SKILL.md",
+      "description": "A green CodeQL PR check only means no NEW alerts versus base; it never proves an existing alert was fixed. Use before reporting a security alert as resolved on the strength of a passing check.",
+      "digest": "sha256:bfd91f23726b678b2b5b4e6decaafbb411ac54a53193cb11fac64b8ed01db676",
+      "kind": "procedure",
+      "domains": [
+        "codeql",
+        "github",
+        "security"
+      ],
+      "origin": {
+        "authored": "2026-08-19",
+        "discovered_in": "profullstack/threatcrush",
+        "evidence": "A truncated alert list produced a false '1 to 5 regression' claim; master already had 5"
+      },
+      "assurance": {
+        "level": "field-observed",
+        "verified_against": "GitHub code-scanning API",
+        "stale_after_days": 365,
+        "eval": {
+          "path": "codeql-green-check-not-proof/eval",
+          "cases": 1,
+          "runnable": false
+        },
+        "receipts": []
+      },
+      "freshness": "dormant"
+    },
+    {
+      "name": "dependabot-supersede-drops-your-commits",
+      "path": "dependabot-supersede-drops-your-commits/SKILL.md",
+      "description": "Dependabot deletes and replaces its own branch when base changes, silently dropping any fix you pushed onto it. Use when a Dependabot bump needs an accompanying code change to go green.",
+      "digest": "sha256:938676bbe738bbab0963bdc0da65821aedcf6ce3ba769eb94bc134f984bed3d6",
+      "kind": "procedure",
+      "domains": [
+        "dependabot",
+        "github",
+        "ci"
+      ],
+      "requires": [
+        "pnpm-override-floors-go-stale"
+      ],
+      "origin": {
+        "authored": "2026-08-19",
+        "discovered_in": "media-streamer",
+        "evidence": "#184 superseded by #186; master left failing typecheck with 53 errors"
+      },
+      "assurance": {
+        "level": "field-observed",
+        "verified_against": "GitHub Dependabot",
+        "stale_after_days": 365,
+        "eval": {
+          "path": "dependabot-supersede-drops-your-commits/eval",
+          "cases": 1,
+          "runnable": false
+        },
+        "receipts": []
+      },
+      "freshness": "dormant"
+    },
+    {
+      "name": "fts5-raw-input-is-a-query",
+      "path": "fts5-raw-input-is-a-query/SKILL.md",
+      "description": "SQLite FTS5 MATCH takes a query language, not a string, so raw user input errors on almost any punctuation. Use when building or debugging full-text search over FTS5, especially where users paste error messages.",
+      "digest": "sha256:3443e571290114ac1a046a8e940eed0273183c536d5e1942a5bbf1a3fee7d128",
+      "kind": "recipe",
+      "domains": [
+        "sqlite",
+        "fts5",
+        "search"
+      ],
+      "origin": {
+        "authored": "2026-08-19",
+        "discovered_in": "profullstack/bufferoverride",
+        "evidence": "packages/core/src/fts.ts (toFtsQuery, ftsAttempts)"
+      },
+      "assurance": {
+        "level": "self-verified",
+        "verified_against": "node:sqlite / SQLite 3.50 FTS5, Node 24.18.1",
+        "last_verified": "2026-08-28",
+        "stale_after_days": 1095,
+        "eval": {
+          "path": "fts5-raw-input-is-a-query/eval",
+          "cases": 1,
+          "runnable": true
+        },
+        "receipts": [
+          {
+            "digest": "sha256:3443e571290114ac1a046a8e940eed0273183c536d5e1942a5bbf1a3fee7d128",
+            "ran_at": "2026-08-28T00:00:00Z",
+            "model": "node v24.18.1 / linux",
+            "passed": 1,
+            "total": 1
+          }
+        ]
+      },
+      "freshness": "live"
+    },
+    {
+      "name": "git-stash-shared-across-worktrees",
+      "path": "git-stash-shared-across-worktrees/SKILL.md",
+      "description": "git stash is one stack per repository, shared by every worktree, so parallel agents silently pop each other's entries. Use when coordinating concurrent work in git worktrees, or when edits vanish and are replaced by someone else's.",
+      "digest": "sha256:7fee169365208c04abb07e63d7cac419f12806048753bd7575fc183e69dbe34b",
+      "kind": "constraint",
+      "domains": [
+        "git",
+        "worktrees",
+        "concurrency"
+      ],
+      "origin": {
+        "authored": "2026-08-16",
+        "discovered_in": "profullstack/threatcrush",
+        "evidence": "A stash push/pop around a baseline measurement popped a concurrent job's stash instead."
+      },
+      "assurance": {
+        "level": "self-verified",
+        "verified_against": "git 2.43+",
+        "last_verified": "2026-08-28",
+        "stale_after_days": 1095,
+        "eval": {
+          "path": "git-stash-shared-across-worktrees/eval",
+          "cases": 1,
+          "runnable": true
+        },
+        "receipts": [
+          {
+            "digest": "sha256:7fee169365208c04abb07e63d7cac419f12806048753bd7575fc183e69dbe34b",
+            "ran_at": "2026-08-28T00:00:00Z",
+            "model": "node v24.18.1 / linux",
+            "passed": 1,
+            "total": 1
+          }
+        ]
+      },
+      "freshness": "live"
+    },
+    {
+      "name": "libsql-undefined-unbindable-remote-only",
+      "path": "libsql-undefined-unbindable-remote-only/SKILL.md",
+      "description": "libSQL binding `undefined` throws on the remote client but binds as null on a local file DB, so local tests never catch it. Use when a libSQL/Turso app fails only in production, or when \"Unsupported type of value\" appears with no column name.",
+      "digest": "sha256:46e45190b7cdf08880ea2fd89fdc798ea94e7fbcf9c8c8c05c7a937fc2cf4134",
+      "kind": "diagnostic",
+      "domains": [
+        "libsql",
+        "turso",
+        "sqlite",
+        "testing"
+      ],
+      "origin": {
+        "authored": "2026-08-19",
+        "discovered_in": "profullstack/rssamplifier",
+        "evidence": "PR #141; crawl-log error rate 71% -> 5.6% on deploy"
+      },
+      "assurance": {
+        "level": "field-observed",
+        "verified_against": "@libsql/hrana-client, remote https:// URL",
+        "stale_after_days": 730,
+        "eval": {
+          "path": "libsql-undefined-unbindable-remote-only/eval",
+          "cases": 1,
+          "runnable": false
+        },
+        "receipts": []
+      },
+      "freshness": "dormant"
+    },
+    {
+      "name": "mixed-content-beats-csp",
+      "path": "mixed-content-beats-csp/SKILL.md",
+      "description": "An http:// frame or media source on an https page is blockable mixed content and cannot be allowed back in by loosening CSP. Use when a console CSP error points at an http:// resource and the obvious fix is to widen the policy.",
+      "digest": "sha256:eb3fe8050726bf2387945c6769711adf4a4ea8fefc75017b13c10831b2662f9e",
+      "kind": "diagnostic",
+      "domains": [
+        "csp",
+        "browsers",
+        "security"
+      ],
+      "origin": {
+        "authored": "2026-08-19",
+        "discovered_in": "profullstack/rssamplifier",
+        "evidence": "PR #123, the reader's embedded frame"
+      },
+      "assurance": {
+        "level": "field-observed",
+        "verified_against": "Chromium, https origin",
+        "stale_after_days": 1095,
+        "eval": {
+          "path": "mixed-content-beats-csp/eval",
+          "cases": 1,
+          "runnable": false
+        },
+        "receipts": []
+      },
+      "freshness": "dormant"
+    },
+    {
+      "name": "nextjs-client-module-exports-are-references",
+      "path": "nextjs-client-module-exports-are-references/SKILL.md",
+      "description": "Every export of a 'use client' module becomes a client reference when a server component imports it, so a constant compares as a proxy and the comparison silently fails. Use when a conditionally-rendered client component never appears and throws no error.",
+      "digest": "sha256:8455c398d58ff2fee306b1f805f661fbed08c50ca419a461098f0145c7b16906",
+      "kind": "constraint",
+      "domains": [
+        "nextjs",
+        "react",
+        "app-router"
+      ],
+      "requires": [
+        "nextjs-inlines-process-env"
+      ],
+      "origin": {
+        "authored": "2026-08-19",
+        "discovered_in": "profullstack/rssamplifier",
+        "evidence": "PR #124, Next 16.3 / React 19"
+      },
+      "assurance": {
+        "level": "field-observed",
+        "verified_against": "Next 16.3, React 19",
+        "stale_after_days": 365,
+        "eval": {
+          "path": "nextjs-client-module-exports-are-references/eval",
+          "cases": 1,
+          "runnable": false
+        },
+        "receipts": []
+      },
+      "freshness": "dormant"
+    },
+    {
+      "name": "nextjs-inlines-process-env",
+      "path": "nextjs-inlines-process-env/SKILL.md",
+      "description": "Next.js statically replaces process.env.NAME at build time, including in server code, so a runtime secret compiles in as undefined permanently. Use when a deployed Next app 401s but the same credentials work by curl.",
+      "digest": "sha256:f8bacbd7127d99dd1ba7a57ef9dd150ed5af8cf9f6129427719d569f8c0fa526",
+      "kind": "constraint",
+      "domains": [
+        "nextjs",
+        "docker",
+        "secrets"
+      ],
+      "origin": {
+        "authored": "2026-08-11",
+        "discovered_in": "outreachgraph",
+        "evidence": "Web image built before its credentials existed; every request went out with no auth header"
+      },
+      "assurance": {
+        "level": "field-observed",
+        "verified_against": "Next.js App Router, containerised build",
+        "stale_after_days": 365,
+        "eval": {
+          "path": "nextjs-inlines-process-env/eval",
+          "cases": 1,
+          "runnable": false
+        },
+        "receipts": []
+      },
+      "freshness": "dormant"
+    },
+    {
+      "name": "npm-first-publish-404-window",
+      "path": "npm-first-publish-404-window/SKILL.md",
+      "description": "A brand-new scoped npm package 404s on every read path for minutes after a successful publish. Use before re-publishing, bumping a version, or concluding a token is broken.",
+      "digest": "sha256:0067948f5865f603e0697501b9829969d51d313ea29b0eec7d76f4be98696bbc",
+      "kind": "diagnostic",
+      "domains": [
+        "npm",
+        "registry",
+        "release"
+      ],
+      "origin": {
+        "authored": "2026-08-19",
+        "discovered_in": "@profullstack/bufferoverride@0.1.0",
+        "evidence": "~10 minutes of 404s, then it appeared and installed normally"
+      },
+      "assurance": {
+        "level": "field-observed",
+        "verified_against": "registry.npmjs.org, first publish of a new scoped name",
+        "stale_after_days": 365,
+        "eval": {
+          "path": "npm-first-publish-404-window/eval",
+          "cases": 1,
+          "runnable": false
+        },
+        "receipts": []
+      },
+      "freshness": "dormant"
+    },
+    {
+      "name": "pnpm-override-floors-go-stale",
+      "path": "pnpm-override-floors-go-stale/SKILL.md",
+      "description": "A '>=X' pnpm override resolves once and the lockfile pins it, so the override protecting you becomes what holds you on a vulnerable version and Dependabot reports security_update_not_possible. Use when a security PR fails to open or an override does not seem to take.",
+      "digest": "sha256:36a040f0031284096120ab07568fd2e9d92bb10be5324bce3c1d03b34c0a1b88",
+      "kind": "constraint",
+      "domains": [
+        "pnpm",
+        "dependabot",
+        "security"
+      ],
+      "origin": {
+        "authored": "2026-08-16",
+        "discovered_in": "coinpayportal",
+        "evidence": "PR #258; socket.io-parser, ip-address and dompurify all locked at exactly their floors"
+      },
+      "assurance": {
+        "level": "field-observed",
+        "verified_against": "pnpm workspaces, pnpm-lock.yaml",
+        "stale_after_days": 365,
+        "eval": {
+          "path": "pnpm-override-floors-go-stale/eval",
+          "cases": 1,
+          "runnable": false
+        },
+        "receipts": []
+      },
+      "freshness": "dormant"
+    },
+    {
+      "name": "turso-request-size-ceiling",
+      "path": "turso-request-size-ceiling/SKILL.md",
+      "description": "Turso/libSQL accepts at least a 32 MiB bound argument in one execute; the published limits page 404s and web search has no number. Use before sizing a column cap or chunking writes around a guessed HTTP limit.",
+      "digest": "sha256:e40c1820dae33f26b9d5d47331f0263fb438241392468c9f16757648fa171d59",
+      "kind": "constraint",
+      "domains": [
+        "turso",
+        "libsql"
+      ],
+      "requires": [
+        "libsql-undefined-unbindable-remote-only"
+      ],
+      "origin": {
+        "authored": "2026-08-17",
+        "discovered_in": "profullstack/rssamplifier",
+        "evidence": "Measured against prod with a read-only `select length(?)`"
+      },
+      "assurance": {
+        "level": "field-observed",
+        "verified_against": "Turso hosted, rssamplifier prod database, 2026-08-17",
+        "stale_after_days": 180,
+        "eval": {
+          "path": "turso-request-size-ceiling/eval",
+          "cases": 1,
+          "runnable": true
+        },
+        "receipts": []
+      },
+      "freshness": "dormant"
+    }
+  ]
+}
